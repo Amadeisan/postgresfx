@@ -1,0 +1,121 @@
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+
+import java.sql.*;
+
+    public class Main extends Application {
+        TextArea textArea;
+        Button showButton;
+        Button addButton;
+        VBox vBox;
+        Scene scene;
+        String str;
+        postgres postgres;
+        Connection connection;
+        TextField brandInput, modelInput, displaySizeInput, storageMemoryInput, priceInput;
+
+
+        public static void main(String[] args) throws SQLException {
+
+            launch(args);
+        }
+
+
+        @Override
+        public void start(Stage primaryStage) throws Exception {
+            postgres = new postgres();
+            connection = new postgres().createConnection();
+
+
+            //GUI
+            textArea = new TextArea();
+            showButton = new Button("Show");
+            showButton.setOnAction(e -> setShowButton());
+            addButton = new Button("Add");
+            addButton.setOnAction(e -> {
+                setAddButton();
+            });
+
+
+            //Brand Input
+            brandInput = new TextField();
+            brandInput.setPromptText("Brand");
+            brandInput.setMinWidth(100);
+
+            //Model Input
+            modelInput = new TextField();
+            modelInput.setPromptText("Model");
+            modelInput.setMinWidth(150);
+
+            //Display size Input
+            displaySizeInput = new TextField();
+            displaySizeInput.setPromptText("Display size");
+            displaySizeInput.setMinWidth(50);
+
+            //Storage Memory Input
+            storageMemoryInput = new TextField();
+            storageMemoryInput.setPromptText("Storage memory");
+            storageMemoryInput.setMinWidth(50);
+
+            //Price Input
+            priceInput = new TextField();
+            priceInput.setPromptText("Price");
+            priceInput.setMinWidth(100);
+
+
+            //Scene
+            HBox hBox = new HBox();
+            hBox.getChildren().addAll(showButton, brandInput, modelInput, displaySizeInput, storageMemoryInput, priceInput, addButton);
+
+
+            vBox = new VBox(textArea, hBox);
+            scene = new Scene(vBox);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+        }
+
+
+        //Set On Actions
+        public void setShowButton() {
+            try {
+                textArea.setText(postgres.getData(connection));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void setAddButton() {
+            postgres.addData(connection, brandInput.getText(), modelInput.getText(), displaySizeInput.getText(),storageMemoryInput.getText(),priceInput.getText() );
+            brandInput.clear();
+            modelInput.clear();
+            displaySizeInput.clear();
+            storageMemoryInput.clear();
+            priceInput.clear();
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
