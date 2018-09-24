@@ -1,0 +1,89 @@
+import java.sql.*;
+
+public class postgres {
+
+
+        final String DB_URL = "jdbc:postgresql://127.0.0.1:5432/shop";
+        final String USER = "postgres";
+        final String PASS = "1";
+
+
+        Statement statement;
+
+        public Connection createConnection() throws SQLException {
+            System.out.println("Testing connection to PostgreSQL JDBC");
+
+
+            try {
+                Class.forName("org.postgresql.Driver");
+            } catch (ClassNotFoundException e) {
+                System.out.println("PostgreSQL JDBC Driver is not found. Include it in your library path ");
+                e.printStackTrace();
+            }
+
+            System.out.println("PostgreSQL JDBC Driver successfully connected");
+            Connection connection = null;
+
+            try {
+                connection = DriverManager
+                        .getConnection(DB_URL, USER, PASS);
+
+            } catch (SQLException e) {
+                System.out.println("Connection Failed");
+                e.printStackTrace();
+            }
+
+            if (connection != null) {
+                System.out.println("You successfully connected to database now");
+            } else {
+                System.out.println("Failed to make connection to database");
+            }
+            return connection;
+        }
+
+            public String getData (Connection connection) throws SQLException {
+                statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery("select *from public.smartphones");
+                StringBuilder stringBuilder= new StringBuilder();
+                while (rs.next()){
+                    String brand = rs.getString("brand");
+                    String model = rs.getString("model");
+                    String displaySize = rs.getString("display");
+                    String storageMemory = rs.getString("storage");
+                    String price = rs.getString("price");
+                    System.out.println(brand + model+displaySize+storageMemory+price);
+                    stringBuilder.append(brand+" " + model+" "+ displaySize+"  "+storageMemory+"m  "+price+" тенге"+"\n");
+                }
+
+                return String.valueOf(stringBuilder);
+
+            }
+
+
+         public void addData(Connection connection, String brand, String model,String display,String storage , String price){
+             String sql = "insert into public.smartphones(brand, model, display, storage, price) values (?,?,?,?,?)";
+             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+                 preparedStatement.setString(1, brand);
+                 preparedStatement.setString(2, model );
+                 preparedStatement.setString(3, display);
+                 preparedStatement.setInt(4, Integer.parseInt(storage));
+                 preparedStatement.setInt(5, Integer.parseInt(price));
+                 preparedStatement.executeUpdate();
+             }
+
+              catch (SQLException e) {
+                 e.printStackTrace();
+                  System.out.println(e.getMessage());
+             }
+         }
+
+
+         public void deleteData(Connection connection, String brand, String model, String display, String storage, String price){
+            String deleteSQL = "delete from public.smartphones";
+
+         }
+
+}
+
+
+
